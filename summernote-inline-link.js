@@ -12,6 +12,11 @@
           var self = this;
           var ui = $.summernote.ui;
 
+          var parentNode;
+          var range;
+          var selection;
+          var selectionText;
+
           /*IE polyfill*/
           if (!Array.prototype.filter) {
               Array.prototype.filter = function (fun /*, thisp*/) {
@@ -33,38 +38,65 @@
           }
 
           var addListener = function () {
-              $('body').on('click', '#emoji-filter', function (e) {
-                  e.stopPropagation();
-                  $('#emoji-filter').focus();
-              });
-              $('body').on('keyup', '#emoji-filter', function (e) {
-                  var filteredList = filterEmoji($(e.currentTarget).val());
-                  $("#emoji-dropdown .emoji-list").html(filteredList);
-              });
               $(document).on('focus', '.note-editor', function(){
-                  self.$panel.fadeOut('500');
+                  self.$panel.hide();
+                  $('.inline-link-input').val('');
+              });
+              $(document).on('click', '.save', function (e) {
+                  if ($(parentNode).parents().is('.note-editable') || $(parentNode).is('.note-editable')) {
+                      var anchorTag = document.createElement('a');
+                      anchorTag.innerHTML = selectionText;
+                      anchorTag.href = $('.inline-link-input').val();
+
+                      range.deleteContents();
+                      range.insertNode(anchorTag);
+                      //cursor at the last with this
+                      range.collapse(false);
+                      selection.removeAllRanges();
+                      selection.addRange(range);
+                  } else {
+                      return;
+                  }
+                  
               });
           };
 
           var render = function () {
-              var render = '<p> Test </p>'
+              var render = 
+                '<p> Inline link </p>' + 
+                '<div class="row m-0-l m-0-r">' +
+                  '<div class="col-md-12">' +
+                  '<input type="text" ' +
+                        'class="form-control inline-link-input" placeholder="https://www.ibm.com" ' +
+                        'id="emoji-filter"/>' +
+                  '<br/>' +
+                  '<p class="save">Save</p>'
+                  '</div>' +
+                '</div>';
               return render;
-          };
-
-          var filterEmoji = function (value) {
-              var filtered = emojis.filter(function (el) {
-                  return el.indexOf(value) > -1;
-              });
-              return render(filtered);
           };
 
           // add emoji button
           context.memo('button.emoji', function () {
               // create button
               var button = ui.button({
-                  contents: 'Inline Links',
-                  tooltip: 'Inline links',
+                  contents: '<span id="btn-inline-link">Inline Links</span>',
                   click: function () {
+                    var inLineLinkInput = $('.inline-link-input');
+                    selection = window.getSelection();
+
+                    if (selection.baseNode.parentNode.nodeName === 'A') {
+                        var currentAnchorLinkHref = selection.baseNode.parentNode.href;
+                        inLineLinkInput.val(currentAnchorLinkHref);
+                    } else {
+                        inLineLinkInput.val('');
+                    }
+
+                    // Get current selected text, range and parentNode and store as fields
+                    selectionText = selection.toString();
+                    range = selection.getRangeAt(0);
+                    parentNode = range.commonAncestorContainer.parentNode;
+
                     var richTextPopover = $('.popover-content');
                     var left = richTextPopover.offset().left;
                     var top = richTextPopover.offset().top;
@@ -85,22 +117,12 @@
               'summernote.init': function (we, e) {
                   addListener();
               },
-              // This will be called when user releases a key on editable.
-              'summernote.keyup': function (we, e) {
-              }
           };
 
           // This method will be called when editor is initialized by $('..').summernote();
           // You can create elements for plugin
           this.initialize = function () {
               this.$panel = $('<div class="dropdown-menu dropdown-keep-open emoji-dialog animated fadeInUp" id="emoji-dropdown">' +
-              '<div class="row m-0-l m-0-r">' +
-                  '<div class="col-md-12">' +
-                      '<p class="m-0-t">Inline Links <i class="fa fa-times pull-right cursor-pointer closeEmoji"></i></p>' +
-                      '<input type="text" class="form-control" placeholder="Zoek naar jouw emotie!" id="emoji-filter"/>' +
-                      '<br/>' +
-                  '</div>' +
-              '</div>' +
               '<div>' +
               render() +
               '</div>' +
@@ -110,9 +132,8 @@
           };
 
           this.destroy = function () {
-              this.$panel.fadeOut('500', function(){
-                 $this.$panel.remove(); 
-              });
+              this.$panel.hide();
+              this.$panel.remove();
               this.$panel = null;
           };
       }
