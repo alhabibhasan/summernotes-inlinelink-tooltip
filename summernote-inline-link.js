@@ -82,13 +82,16 @@
               var button = ui.button({
                   contents: '<span id="btn-inline-link">Inline Links</span>',
                   click: function () {
+                    // Get in line link text field and current selected text.
                     var inLineLinkInput = $('.inline-link-input');
                     selection = window.getSelection();
-
+                    
+                    // Check if we have an inline link, if so, then add the URL to the text box
                     if (selection.baseNode.parentNode.nodeName === 'A') {
                         var currentAnchorLinkHref = selection.baseNode.parentNode.href;
                         inLineLinkInput.val(currentAnchorLinkHref);
                     } else {
+                        // No link? No text
                         inLineLinkInput.val('');
                     }
 
@@ -97,6 +100,7 @@
                     range = selection.getRangeAt(0);
                     parentNode = range.commonAncestorContainer.parentNode;
 
+                    // Add CSS to position the tooltip in the correct position.
                     var richTextPopover = $('.popover-content');
                     var left = richTextPopover.offset().left;
                     var top = richTextPopover.offset().top;
@@ -122,7 +126,7 @@
           // This method will be called when editor is initialized by $('..').summernote();
           // You can create elements for plugin
           this.initialize = function () {
-              this.$panel = $('<div class="dropdown-menu dropdown-keep-open emoji-dialog animated fadeInUp" id="emoji-dropdown">' +
+              this.$panel = $('<div class="dropdown-menu dropdown-keep-open" id="inline-link-tooltip">' +
               '<div>' +
               render() +
               '</div>' +
