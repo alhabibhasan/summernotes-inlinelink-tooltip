@@ -8,11 +8,17 @@
   <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script> 
   <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.11/summernote.css" rel="stylesheet">
   <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.11/summernote.js"></script>
-  <script src="summernote-inline-link.j"></script>
+  <script src="extended-link-dialog.js"></script>
+  <script src="summernote-inline-link.js"></script>
   <link rel="stylesheet" href="inline-link.css">
 </head>
 <body>
-  <div id="summernote"><p>Hello Summernote</p></div>
+  <div id="summernote"><p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard
+  dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen
+  book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially
+  unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and
+  more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+</p></div>
   <script>
     document.emojiSource = '/pngs/'
     $(document).ready(function() {
@@ -23,7 +29,6 @@
                 ['misc', ['emoji']],
                 ['font', ['bold']],
                 ['para', ['ul', 'ol']],
-                ['insert', ['link']],
                 ['table', ['table']],
             ]
           }
